@@ -19,16 +19,20 @@ def get_iou(first_rect, second_rect):
 
 def test(model_results):
     try:
-        gts = pd.read_csv('/usercode/ground-truths.txt', names=['x1', 'y1', 'x2', 'y2'])
-    except:
+        gts = pd.read_csv('ground-truths.txt', names=['x1', 'y1', 'x2', 'y2'])
+    except FileNotFoundError:
         print("Can't read/find ground-truths.txt")
+        return  # Exit the function if file not found
+    except pd.errors.EmptyDataError:
+        print("ground-truths.txt is empty")
+        return
 
     print(gts)
     ground_truths = []
     for gt in gts.values:
         ground_truths.append(list(gt))
 
-    actuals, predictions = np.ones((len(ground_truths)), dtype=int), np.zeros((len(ground_truths)), dtype=int)
+    predictions = np.zeros((len(ground_truths)), dtype=int)
     valid_results = np.zeros((len(model_results)), dtype=int)
 
     for i, result in enumerate(model_results):
